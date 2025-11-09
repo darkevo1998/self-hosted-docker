@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox'
 import { BaseModelSchema } from '../common'
+import { LocalesEnum } from '../common/locale'
 
 
 export enum UserIdentityProvider {
@@ -19,6 +20,7 @@ export const UserIdentity = Type.Object({
     verified: Type.Boolean(),
     tokenVersion: Type.Optional(Type.String()),
     provider: Type.Enum(UserIdentityProvider),
+    locale: Type.Optional(Type.Enum(LocalesEnum)),
 })
 
 export type UserIdentity = Static<typeof UserIdentity>

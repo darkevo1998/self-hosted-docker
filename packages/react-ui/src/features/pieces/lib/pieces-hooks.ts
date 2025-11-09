@@ -1,4 +1,4 @@
-import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
@@ -74,10 +74,11 @@ type UsePiecesSearchProps = {
 export const piecesHooks = {
   usePiece: ({ name, version, enabled = true }: UsePieceProps) => {
     const { i18n } = useTranslation();
+    const locale = i18n.language as LocalesEnum;
     const query = useQuery<PieceMetadataModel, Error>({
-      queryKey: ['piece', name, version],
+      queryKey: ['piece', name, version, locale],
       queryFn: () =>
-        piecesApi.get({ name, version, locale: i18n.language as LocalesEnum }),
+        piecesApi.get({ name, version, locale }),
       staleTime: Infinity,
       enabled,
     });
@@ -124,14 +125,15 @@ export const piecesHooks = {
   },
   useMultiplePieces: ({ names }: UseMultiplePiecesProps) => {
     const { i18n } = useTranslation();
+    const locale = i18n.language as LocalesEnum;
     return useQueries({
       queries: names.map((name) => ({
-        queryKey: ['piece', name, undefined],
+        queryKey: ['piece', name, undefined, locale],
         queryFn: () =>
           piecesApi.get({
             name,
             version: undefined,
-            locale: i18n.language as LocalesEnum,
+            locale,
           }),
         staleTime: Infinity,
       })),
@@ -143,14 +145,15 @@ export const piecesHooks = {
     includeTags = false,
   }: UsePiecesProps) => {
     const { i18n } = useTranslation();
+    const locale = i18n.language as LocalesEnum;
     const query = useQuery<PieceMetadataModelSummary[], Error>({
-      queryKey: ['pieces', searchQuery, includeHidden],
+      queryKey: ['pieces', searchQuery, includeHidden, includeTags, locale],
       queryFn: () =>
         piecesApi.list({
           searchQuery,
           includeHidden,
           includeTags,
-          locale: i18n.language as LocalesEnum,
+          locale,
         }),
       staleTime: searchQuery ? 0 : Infinity,
     });

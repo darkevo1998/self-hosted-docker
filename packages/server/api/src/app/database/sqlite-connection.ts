@@ -92,6 +92,7 @@ import { FieldAndRecordAndCellProjectId1734967659746 } from './migration/sqlite/
 import { AddCellUniqueIndex1735057433052 } from './migration/sqlite/1735057433052-AddCellUniqueIndexSqlite'
 import { AddExternalIdForFlowSqlite1735262810939 } from './migration/sqlite/1735262810939-AddExternalIdForFlowSqlite'
 import { AddUserIdentitySqlite1735602676499 } from './migration/sqlite/1735602676499-AddUserIdentitySqlite'
+import { AddLocaleToUserIdentitySqlite1762480864895 } from './migration/sqlite/1762480864895-AddLocaleToUserIdentitySqlite'
 import { TableWebhooksSqlite1737550783153 } from './migration/sqlite/1737550783153-TableWebhooksSqlite'
 import { RestrictPiecesSqlite1739544872722 } from './migration/sqlite/1739544872722-RestrictPiecesSqlite'
 import { TableWebhooksIsArraySqlite1741668828922 } from './migration/sqlite/1741668828922-TableWebhooksIsArraySqlite'
@@ -261,6 +262,7 @@ const getMigrations = (): (new () => MigrationInterface)[] => {
         AddCopilotSettingsSqlite1734479435668,
         AddExternalIdForFlowSqlite1735262810939,
         AddUserIdentitySqlite1735602676499,
+        AddLocaleToUserIdentitySqlite1762480864895,
         RestrictPiecesSqlite1739544872722,
         TableWebhooksIsArraySqlite1741668828922,
         AddDataColumnToFieldEntity1742390870702,

@@ -278,7 +278,8 @@ const BuilderPage = () => {
                   key={
                     containerKey +
                     (pieceModel?.name ?? '') +
-                    memorizedSelectedStep.type
+                    memorizedSelectedStep.type +
+                    (pieceModel?.i18n ? JSON.stringify(Object.keys(pieceModel.i18n)) : '')
                   }
                 >
                   <StepSettingsContainer />

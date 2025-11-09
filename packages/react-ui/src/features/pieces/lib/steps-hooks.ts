@@ -55,14 +55,15 @@ export const stepsHooks = {
   },
   useAllStepsMetadata: ({ searchQuery, type, enabled }: UseMetadataProps) => {
     const { i18n } = useTranslation();
+    const locale = i18n.language as LocalesEnum;
     const query = useQuery<StepMetadataWithSuggestions[], Error>({
-      queryKey: ['pieces-metadata', searchQuery, type],
+      queryKey: ['pieces-metadata', searchQuery, type, locale],
       queryFn: async () => {
         const pieces = await piecesApi.list({
           searchQuery,
           suggestionType:
             type === 'action' ? SuggestionType.ACTION : SuggestionType.TRIGGER,
-          locale: i18n.language as LocalesEnum,
+          locale,
         });
 
         const filteredPiecesBySuggestionType = pieces.filter(

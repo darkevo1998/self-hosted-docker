@@ -11,6 +11,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { EmbeddingProvider } from '@/components/embed-provider';
+import { GoogleTranslateWidget } from '@/components/google-translate-widget';
+import { LocaleInitializer } from '@/components/locale-initializer';
 import TelemetryProvider from '@/components/telemetry-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
@@ -69,16 +71,19 @@ export function App() {
         <EmbeddingProvider>
           <InitialDataGuard>
             <EmbeddingFontLoader>
-              <TelemetryProvider>
-                <TooltipProvider>
-                  <React.Fragment key={i18n.language}>
-                    <ThemeProvider storageKey="vite-ui-theme">
-                      <ApRouter />
-                      <Toaster />
-                    </ThemeProvider>
-                  </React.Fragment>
-                </TooltipProvider>
-              </TelemetryProvider>
+              <LocaleInitializer>
+                <TelemetryProvider>
+                  <TooltipProvider>
+                    <React.Fragment key={i18n.language}>
+                      <ThemeProvider storageKey="vite-ui-theme">
+                        <GoogleTranslateWidget />
+                        <ApRouter />
+                        <Toaster />
+                      </ThemeProvider>
+                    </React.Fragment>
+                  </TooltipProvider>
+                </TelemetryProvider>
+              </LocaleInitializer>
             </EmbeddingFontLoader>
           </InitialDataGuard>
         </EmbeddingProvider>

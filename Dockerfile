@@ -50,6 +50,8 @@ COPY . .
 
 # Set NX_NO_CLOUD environment variable
 ENV NX_NO_CLOUD=true
+# Force Nx to use the JavaScript runtime to avoid native plugin issues in Docker builds
+ENV NX_NATIVE_RUNTIME=js
 
 RUN npx nx run-many --target=build --projects=react-ui --skip-nx-cache
 RUN npx nx run-many --target=build --projects=server-api --configuration production --skip-nx-cache
@@ -93,7 +95,7 @@ LABEL service=activepieces
 
 # Set up entrypoint script
 COPY docker-entrypoint.sh .
-RUN chmod +x docker-entrypoint.sh
-ENTRYPOINT ["./docker-entrypoint.sh"]
+RUN chmod +x /usr/src/app/docker-entrypoint.sh
+ENTRYPOINT ["sh", "/usr/src/app/docker-entrypoint.sh"]
 
 EXPOSE 80

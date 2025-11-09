@@ -1,7 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import { Check, ChevronsUpDown, Globe } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -23,23 +23,53 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { LoadingSpinner } from '@/components/ui/spinner';
 import { flagsHooks } from '@/hooks/flags-hooks';
+import { userHooks } from '@/hooks/user-hooks';
 import { cn, localesMap } from '@/lib/utils';
-import { ApFlagId } from '@activepieces/shared';
+import { userApi } from '@/lib/user-api';
+import { ApFlagId, LocalesEnum } from '@activepieces/shared';
 
 export const LanguageToggle = () => {
   const { i18n } = useTranslation();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const { data: showCommunity } = flagsHooks.useFlag<boolean>(
     ApFlagId.SHOW_COMMUNITY,
   );
+  const { data: currentUser } = userHooks.useCurrentUser();
+  
+  // Initialize from user's saved locale or current i18n language
+  const initialLanguage = currentUser?.locale || i18n.language || 'en';
   const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(
-    i18n.language ?? 'en',
+    initialLanguage,
   );
 
+  // Update i18n when user's saved locale is loaded
+  useEffect(() => {
+    if (currentUser?.locale && currentUser.locale !== i18n.language) {
+      i18n.changeLanguage(currentUser.locale);
+      setSelectedLanguage(currentUser.locale);
+      // Invalidate all piece queries to refetch with new locale
+      queryClient.invalidateQueries({ queryKey: ['piece'] });
+      queryClient.invalidateQueries({ queryKey: ['pieces'] });
+      queryClient.invalidateQueries({ queryKey: ['pieces-metadata'] });
+    }
+  }, [currentUser?.locale, i18n, queryClient]);
+
   const { mutate, isPending } = useMutation({
-    mutationFn: (value: string) => {
+    mutationFn: async (value: string) => {
       setSelectedLanguage(value);
-      return i18n.changeLanguage(value);
+      await i18n.changeLanguage(value);
+      // Save locale to user profile
+      try {
+        await userApi.updateLocale(value as LocalesEnum);
+        // Invalidate all piece queries to force refetch with new locale
+        // This ensures all pieces (including 3rd party) are dynamically translated
+        queryClient.invalidateQueries({ queryKey: ['piece'] });
+        queryClient.invalidateQueries({ queryKey: ['pieces'] });
+        queryClient.invalidateQueries({ queryKey: ['pieces-metadata'] });
+      } catch (error) {
+        console.error('Failed to save locale preference:', error);
+      }
     },
     onSuccess: () => {
       setIsOpen(false);

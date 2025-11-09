@@ -76,6 +76,7 @@ import { projectHooks } from './project/project-hooks'
 import { projectModule } from './project/project-module'
 import { storeEntryModule } from './store-entry/store-entry.module'
 import { tablesModule } from './tables/tables.module'
+import { translationModule } from './translation/translation.module'
 import { todoActivityModule } from './todos/activity/todos-activity.module'
 import { todoModule } from './todos/todo.module'
 import { appEventRoutingModule } from './trigger/app-event-routing/app-event-routing.module'
@@ -200,6 +201,7 @@ export const setupApp = async (app: FastifyInstance): Promise<FastifyInstance> =
     await app.register(alertsModule)
     await app.register(invitationModule)
     await app.register(workerModule)
+    await app.register(translationModule)
     await app.register(aiProviderModule)
     await app.register(licenseKeysModule)
     await app.register(tablesModule)

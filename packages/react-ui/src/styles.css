@@ -162,3 +162,20 @@
 body {
   pointer-events: auto !important;
 }
+
+/* Google Translate widget overlays */
+body > .skiptranslate,
+.goog-te-banner-frame,
+.goog-te-spinner-pos,
+.goog-te-layer-shade,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+html,
+body {
+  top: 0 !important;
+}

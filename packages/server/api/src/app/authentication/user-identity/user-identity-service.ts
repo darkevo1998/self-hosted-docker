@@ -1,4 +1,4 @@
-import { ActivepiecesError, apId, ErrorCode, isNil, UserIdentity } from '@activepieces/shared'
+import { ActivepiecesError, apId, ErrorCode, isNil, LocalesEnum, UserIdentity } from '@activepieces/shared'
 import { FastifyBaseLogger } from 'fastify'
 import { nanoid } from 'nanoid'
 import { repoFactory } from '../../core/db/repo-factory'
@@ -108,6 +108,13 @@ export const userIdentityService = (log: FastifyBaseLogger) => ({
             verified: true,
         })
     },
+    async updateLocale(params: UpdateLocaleParams): Promise<UserIdentity> {
+        const userIdentity = await userIdentityRepository().findOneByOrFail({ id: params.id })
+        return userIdentityRepository().save({
+            ...userIdentity,
+            locale: params.locale,
+        })
+    },
 })
 
 
@@ -128,4 +135,9 @@ type UpdatePasswordParams = {
 type VerifyIdentityPasswordParams = {
     email: string
     password: string
+}
+
+type UpdateLocaleParams = {
+    id: string
+    locale: LocalesEnum | undefined
 }

@@ -79,6 +79,7 @@ export const UserWithMetaInformationAndProject = Type.Object({
     trackEvents: Type.Boolean(),
     newsLetter: Type.Boolean(),
     verified: Type.Boolean(),
+    locale: Type.Optional(Type.String()),
 })
 
 export type UserWithMetaInformationAndProject = Static<typeof UserWithMetaInformationAndProject>

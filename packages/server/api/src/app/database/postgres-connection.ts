@@ -186,6 +186,7 @@ import { AddCellUniqueIndex1735057498882 } from './migration/postgres/1735057498
 import { AddExternalIdForFlow1735262417593 } from './migration/postgres/1735262417593-AddExternalIdForFlow'
 import { AddEnvironmentsEnabled1735267452262 } from './migration/postgres/1735267452262-AddEnvironmentsEnabled'
 import { AddUserIdentity1735590074879 } from './migration/postgres/1735590074879-AddUserIdentity'
+import { AddLocaleToUserIdentity1762480864894 } from './migration/postgres/1762480864894-AddLocaleToUserIdentity'
 import { RemoveUnusedProjectBillingFields1736607721367 } from './migration/postgres/1736607721367-RemoveUnusedProjectBillingFields'
 import { RenameGitRepoPermission1736813103505 } from './migration/postgres/1736813103505-RenameGitRepoPermission'
 import { RestrictPieces1739546878775 } from './migration/postgres/1739546878775-RestrictPieces'
@@ -405,6 +406,7 @@ const getMigrations = (): (new () => MigrationInterface)[] => {
         AddExternalIdForFlow1735262417593,
         AddEnvironmentsEnabled1735267452262,
         AddUserIdentity1735590074879,
+        AddLocaleToUserIdentity1762480864894,
         RenameGitRepoPermission1736813103505,
         RestrictPieces1739546878775,
         CreateTableWebhooks1741669458075,

@@ -152,7 +152,7 @@ export function useForwardedRef<T>(ref: React.ForwardedRef<T>) {
 }
 
 export const localesMap = {
-  [LocalesEnum.CHINESE_SIMPLIFIED]: '简体中文',
+  [LocalesEnum.ARABIC]: 'العربية',
   [LocalesEnum.GERMAN]: 'Deutsch',
   [LocalesEnum.ENGLISH]: 'English',
   [LocalesEnum.SPANISH]: 'Español',
@@ -160,6 +160,8 @@ export const localesMap = {
   [LocalesEnum.JAPANESE]: '日本語',
   [LocalesEnum.DUTCH]: 'Nederlands',
   [LocalesEnum.PORTUGUESE]: 'Português',
+  [LocalesEnum.RUSSIAN]: 'Русский',
+  [LocalesEnum.CHINESE_SIMPLIFIED]: '简体中文',
   [LocalesEnum.CHINESE_TRADITIONAL]: '繁體中文',
 };
 

@@ -4,6 +4,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -58,17 +59,21 @@ export const StepSettingsProvider = ({
   const [formSchema, setFormSchema] = useState<TObject<any>>(
     Type.Object(Type.Unknown()),
   );
-  const formSchemaInitializedRef = useRef<boolean>(false);
+  const previousPieceModelRef = useRef<PieceMetadataModel | undefined>(undefined);
 
-  if (!formSchemaInitializedRef.current && selectedStep) {
-    const schema = formUtils.buildPieceSchema(
-      selectedStep.type,
-      selectedStep.settings.actionName ?? selectedStep.settings.triggerName,
-      pieceModel ?? null,
-    );
-    formSchemaInitializedRef.current = true;
-    setFormSchema(schema as TObject<any>);
-  }
+  // Rebuild schema when pieceModel changes (e.g., when locale changes and piece is retranslated)
+  // This ensures piece properties are updated with new translations
+  useEffect(() => {
+    if (selectedStep && pieceModel !== previousPieceModelRef.current) {
+      const schema = formUtils.buildPieceSchema(
+        selectedStep.type,
+        selectedStep.settings.actionName ?? selectedStep.settings.triggerName,
+        pieceModel ?? null,
+      );
+      setFormSchema(schema as TObject<any>);
+      previousPieceModelRef.current = pieceModel;
+    }
+  }, [selectedStep, pieceModel]);
 
   const updateFormSchema = useCallback(
     (key: string, newFieldPropertyMap: PiecePropertyMap) => {
