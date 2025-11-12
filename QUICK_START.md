@@ -14,19 +14,15 @@
    - Create your admin account
    - Select your language in settings
 
-### Linux/Mac
+### macOS / Linux
 
-1. **Generate environment file:**
+1. **Run the setup script:**
    ```bash
-   bash tools/deploy.sh
+   chmod +x ./setup-unix.sh   # first time only
+   ./setup-unix.sh
    ```
 
-2. **Start services (Activepieces + Nginx proxy):**
-   ```bash
-   docker compose -p activepieces up -d
-   ```
-
-3. **Access:**
+2. **Access:**
    - Open: http://localhost (or your mapped domain)
    - Create admin account
    - Change language in settings
