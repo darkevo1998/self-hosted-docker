@@ -1,4 +1,4 @@
-FROM node:20.19-bullseye-slim AS base
+FROM node:20.19-bullseye-slim AS builder-base
 
 # Use a cache mount for apt to speed up the process
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -12,33 +12,33 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         git \
         poppler-utils \
         poppler-data \
-        procps && \
-    yarn config set python /usr/bin/python3 && \
-    npm install -g node-gyp
-RUN npm i -g bun@1.3.1 npm@9.9.3 pnpm@9.15.0 pm2@6.0.10 typescript@4.9.4
+        procps \
+        libcap-dev \
+        locales && \
+    rm -rf /var/lib/apt/lists/* && \
+    sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen en_US.UTF-8
 
-# Set the locale
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-ENV NX_DAEMON=false
+ENV LANG en_US.UTF-8 \
+    LANGUAGE en_US:en \
+    LC_ALL en_US.UTF-8
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    locales \
-    locales-all \
-    libcap-dev \
- && rm -rf /var/lib/apt/lists/*
+RUN yarn config set python /usr/bin/python3
+RUN npm install -g bun@1.3.1 pnpm@9.15.0 node-gyp@10.0.1
 
 # install isolated-vm in a parent directory to avoid linking the package in every sandbox
-RUN cd /usr/src && bun i isolated-vm@5.0.1
+RUN cd /usr/src && bun install isolated-vm@5.0.1
 
 RUN pnpm store add @tsconfig/node18@1.0.0
 RUN pnpm store add @types/node@18.17.1
 RUN pnpm store add typescript@4.9.4
 
 ### STAGE 1: Build ###
-FROM base AS build
+FROM builder-base AS build
+
+ENV NX_NO_CLOUD=true \
+    NX_NATIVE_RUNTIME=js \
+    NX_DAEMON=false
 
 # Set up backend
 WORKDIR /usr/src/app
@@ -48,27 +48,39 @@ RUN bun install
 
 COPY . .
 
-# Set NX_NO_CLOUD environment variable
-ENV NX_NO_CLOUD=true
-# Force Nx to use the JavaScript runtime to avoid native plugin issues in Docker builds
-ENV NX_NATIVE_RUNTIME=js
-
-RUN npx nx run-many --target=build --projects=react-ui --skip-nx-cache
-RUN npx nx run-many --target=build --projects=server-api --configuration production --skip-nx-cache
+RUN npx nx run-many --target=build --projects=react-ui
+RUN npx nx run-many --target=build --projects=server-api --configuration production
 
 # Install backend production dependencies
-RUN cd dist/packages/server/api && bun install --production --force
+RUN cd dist/packages/server/api && bun install --production
 
 ### STAGE 2: Run ###
-FROM base AS run
+FROM node:20.19-bullseye-slim AS run
+
+ENV LANG en_US.UTF-8 \
+    LANGUAGE en_US:en \
+    LC_ALL en_US.UTF-8 \
+    NODE_ENV=production \
+    NX_DAEMON=false \
+    NX_NO_CLOUD=true \
+    NX_NATIVE_RUNTIME=js
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx \
+    gettext \
+    poppler-utils \
+    poppler-data \
+    procps \
+    libcap2 \
+    locales && \
+    rm -rf /var/lib/apt/lists/* && \
+    sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen en_US.UTF-8
 
 # Set up backend
 WORKDIR /usr/src/app
 
 COPY packages/server/api/src/assets/default.cf /usr/local/etc/isolate
-
-# Install Nginx and gettext for envsubst
-RUN apt-get update && apt-get install -y nginx gettext
 
 # Copy Nginx configuration template
 COPY nginx.react.conf /etc/nginx/nginx.conf
@@ -84,9 +96,6 @@ COPY --from=build /usr/src/app/dist/packages/engine/ /usr/src/app/dist/packages/
 COPY --from=build /usr/src/app/dist/packages/server/ /usr/src/app/dist/packages/server/
 COPY --from=build /usr/src/app/dist/packages/shared/ /usr/src/app/dist/packages/shared/
 
-RUN cd /usr/src/app/dist/packages/server/api/ && bun install --production --force
-
-# Copy Output files to appropriate directory from build stage
 COPY --from=build /usr/src/app/packages packages
 # Copy frontend files to Nginx document root directory from build stage
 COPY --from=build /usr/src/app/dist/packages/react-ui /usr/share/nginx/html/

@@ -15,16 +15,8 @@ services:
     ports:
      - "5432:5432"
 
-  redis:
-    extends:
-      file: docker-compose.dev.yml
-      service: redis
-    ports:
-     - "6379:6379"
-
 volumes:
   postgres_data_dev:
-  redis_data_dev:
 
 networks:
   activepieces_dev:
