@@ -95,6 +95,9 @@ AP_POSTGRES_PASSWORD=$postgres_password
 AP_POSTGRES_HOST=postgres
 AP_POSTGRES_PORT=5432
 
+# Optional: Redis configuration if you connect to an external instance
+# AP_REDIS_HOST=
+# AP_REDIS_PORT=6379
 
 # Security
 AP_JWT_SECRET=$jwt_secret

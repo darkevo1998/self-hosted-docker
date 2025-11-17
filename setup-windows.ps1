@@ -68,6 +68,10 @@ AP_POSTGRES_PASSWORD=$postgresPassword
 AP_POSTGRES_HOST=postgres
 AP_POSTGRES_PORT=5432
 
+# Redis Configuration
+AP_REDIS_HOST=redis
+AP_REDIS_PORT=6379
+
 # Security
 AP_JWT_SECRET=$jwtSecret
 ENCRYPTION_KEY=$encryptionKey
