@@ -3,10 +3,16 @@ const DEFAULT_SOURCE_LANGUAGE = 'en'
 const GOOGLE_COMBO_SELECTOR = 'select.goog-te-combo'
 const ARTEFACT_SELECTORS = [
   '.goog-te-banner-frame.skiptranslate',
+  '.goog-te-banner-frame',
   '.goog-te-spinner-pos',
   '.goog-te-layer-shade',
   '#goog-gt-tt',
   '.goog-te-balloon-frame',
+  '.goog-te-menu-frame',
+  '.goog-te-menu-value',
+  '.goog-te-menu2',
+  'iframe[src*="translate.google.com"]',
+  'iframe[src*="translate.googleapis.com"]',
 ]
 
 const normalizeLanguage = (value: string): string => {
@@ -29,7 +35,33 @@ const hideBlockingOverlays = () => {
       element.style.display = 'none'
       element.style.visibility = 'hidden'
       element.style.pointerEvents = 'none'
+      element.style.opacity = '0'
+      element.style.zIndex = '-1'
     })
+  })
+
+  // Also hide any divs with black/dark backgrounds that might be overlays
+  document.querySelectorAll<HTMLElement>('div[style*="background"], div[style*="opacity"]').forEach((element) => {
+    const computedStyle = window.getComputedStyle(element)
+    const bgColor = computedStyle.backgroundColor
+    const opacity = computedStyle.opacity
+    const zIndex = parseInt(computedStyle.zIndex) || 0
+    
+    // Check if it's a dark overlay with high z-index (likely a blocking overlay)
+    if (zIndex > 100 && opacity !== '0' && 
+        (bgColor.includes('rgba(0, 0, 0') || bgColor.includes('rgb(0, 0, 0') ||
+         bgColor.includes('rgba(255, 255, 255') && parseFloat(opacity) < 1)) {
+      // Make sure it's not our widget container
+      if (!element.id || element.id !== 'google_translate_element') {
+        const widget = document.getElementById('google_translate_element')
+        if (!widget || !element.contains(widget) && !widget.contains(element)) {
+          element.style.display = 'none'
+          element.style.visibility = 'hidden'
+          element.style.pointerEvents = 'none'
+          element.style.opacity = '0'
+        }
+      }
+    }
   })
 
   if (document.body.style.position === 'relative') {

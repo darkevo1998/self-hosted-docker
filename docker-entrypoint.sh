@@ -3,7 +3,7 @@ set -e
 
 # Set default values if not provided
 export AP_APP_TITLE="${AP_APP_TITLE:-Activepieces}"
-export AP_FAVICON_URL="${AP_FAVICON_URL:-https://cdn.activepieces.com/brand/favicon.ico}"
+export AP_FAVICON_URL="${AP_FAVICON_URL:-/favicon.ico}"
 
 # Debug: Print environment variables
 echo "AP_APP_TITLE: $AP_APP_TITLE"

@@ -74,7 +74,7 @@ AP_REDIS_PORT=6379
 
 # Security
 AP_JWT_SECRET=$jwtSecret
-ENCRYPTION_KEY=$encryptionKey
+AP_ENCRYPTION_KEY=$encryptionKey
 
 # Frontend/API URLs
 AP_FRONTEND_URL=http://localhost:8080

@@ -33,10 +33,10 @@ export const GoogleTranslateWidget = () => {
       }
     }
 
-    // keep removing any google overlay that might block the UI
+    // keep removing any google overlay that might block the UI - more frequent
     const interval = window.setInterval(() => {
       ensureGoogleOverlaysHidden()
-    }, 1000)
+    }, 100) // Changed from 1000ms to 100ms for faster removal
 
     window.googleTranslateElementInit = initializeWidget
 
@@ -71,12 +71,40 @@ export const GoogleTranslateWidget = () => {
     ensureGoogleOverlaysHidden()
   }, [i18n.language])
 
+  // Force position to bottom left continuously and remove overlays
+  useEffect(() => {
+    const forcePosition = () => {
+      // Remove overlays first
+      ensureGoogleOverlaysHidden()
+      
+      const widget = document.getElementById('google_translate_element')
+      if (widget) {
+        const parent = widget.parentElement
+        if (parent && parent !== document.body) {
+          const style = parent.style
+          style.setProperty('position', 'fixed', 'important')
+          style.setProperty('bottom', '140px', 'important')
+          style.setProperty('left', '10px', 'important')
+          style.setProperty('top', 'auto', 'important')
+          style.setProperty('right', 'auto', 'important')
+        }
+      }
+    }
+
+    const interval = setInterval(forcePosition, 50) // Run every 50ms for faster overlay removal
+    forcePosition() // Run immediately
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div
       style={{
         position: 'fixed',
-        top: '1rem',
-        right: '1rem',
+        bottom: '140px',
+        left: '10px',
+        top: 'auto',
+        right: 'auto',
         zIndex: 1000,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         borderRadius: '0.5rem',
